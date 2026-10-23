@@ -1,0 +1,6 @@
+Edited using built-in image_gen with transparent_background=true.
+
+Edit target: the attached Course Downloader logo. Use case: precise-object-edit / logo-brand.
+Improve ONLY the blue downward download arrow and the immediately adjacent notch in the blue video rectangle. Preserve the exact "Course Downloader" wordmark, typography, spacing, placement, blue color, white play triangle, overall layout and canvas proportions.
+Redesign the arrow with a clean professional geometric silhouette: narrower balanced arrowhead, distinct straight centered shaft with enough length to read clearly, symmetric 45-degree diagonal shoulders, gently rounded corners and a subtly rounded tip. Make it feel optically balanced and integrated into the video icon, not a chunky detached badge. Use one consistent clean transparent separation gap around the shaft and arrow shoulders where it overlaps the video rectangle; eliminate the awkward stepped bumps and irregular cutout. Arrow in the same blue as the original video icon, no outline or shadow. Crisp smooth vector-like edges. Maintain genuinely transparent background and original transparency. No new elements, no extra text, no changes to wordmark.
+

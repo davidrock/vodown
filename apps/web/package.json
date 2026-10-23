@@ -1,0 +1,1 @@
+{"name":"@vodown/web","private":true,"version":"0.1.0","scripts":{"serve":"next dev --port 3000","build":"next build --webpack","start":"next start --port 3000"}}

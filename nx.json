@@ -1,0 +1,9 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "defaultBase": "main",
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*", "!{projectRoot}/node_modules/**/*", "!{projectRoot}/bin/**/*", "!{projectRoot}/obj/**/*", "!{projectRoot}/.next/**/*", "!{projectRoot}/dist/**/*", "!{projectRoot}/src-tauri/target/**/*"],
+    "sharedGlobals": ["{workspaceRoot}/pnpm-lock.yaml", "{workspaceRoot}/tsconfig.json", "{workspaceRoot}/Directory.Build.props"]
+  },
+  "targetDefaults": { "build": {"cache": true, "inputs": ["default", "^default", "sharedGlobals"]}, "test": {"cache": true, "inputs": ["default", "^default", "sharedGlobals"]} }
+}

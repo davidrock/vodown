@@ -1,0 +1,1 @@
+{"name":"@vodown/desktop","version":"0.1.0","private":true,"type":"module","scripts":{"serve":"vite --host 127.0.0.1 --port 1420 --strictPort","build":"vite build","tauri":"tauri"}}

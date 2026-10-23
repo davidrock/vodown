@@ -1,0 +1,1 @@
+{"name":"@vodown/ui","private":true,"version":"0.1.0","type":"module","exports":{"./button":"./src/button.tsx","./card":"./src/card.tsx","./input":"./src/input.tsx","./brand":"./src/brand.tsx","./styles.css":"./src/styles.css"}}

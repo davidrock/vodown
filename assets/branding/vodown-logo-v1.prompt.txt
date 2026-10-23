@@ -1,0 +1,6 @@
+Generated using built-in image_gen with transparent_background=true.
+
+Use case: logo-brand.
+Create an original polished logo for a desktop video/course download app named "Vodown".
+Deliver ONE finished horizontal logo lockup on a genuinely transparent background. Distinctive compact emblem at left: an ingenious bold geometric V that also reads as a downward download arrow, with two clean diagonal wings and a short central stem subtly integrated into the top negative space. It should be a cohesive simple memorable silhouette rather than an assembly of generic icons, beautifully balanced and recognizable at 24 pixels. Subtle reference to video through geometry only, no separate play icon. Emblem in solid vivid electric blue. To its right, exact text "Vodown", capital V followed by lowercase odown, contemporary custom-feeling geometric sans-serif wordmark in near-black navy, medium/semibold weight, optically refined kerning, softly rounded terminals. Professional contemporary software brand, confident and approachable, economical shapes, strong proportion between emblem and typography. Flat vector-like crisp graphic treatment with generous clearspace. No gradients, no shadows, no texture, no 3D, no mockup, no border, no slogan, no domain name, no presentation board, no multiple variants. Actual transparent background.
+

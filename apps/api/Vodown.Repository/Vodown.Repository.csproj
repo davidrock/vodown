@@ -1,0 +1,1 @@
+<Project Sdk="Microsoft.NET.Sdk"><ItemGroup><PackageReference Include="Stripe.net" Version="53.0.0" /><ProjectReference Include="../Vodown.Service/Vodown.Service.csproj" /><PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" /></ItemGroup></Project>

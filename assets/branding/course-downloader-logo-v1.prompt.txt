@@ -1,0 +1,5 @@
+Generated using the built-in image_gen tool with transparent_background=true.
+
+Use case: logo-brand.
+Create a polished original logo for an educational desktop application named "Course Downloader". Deliver a single clean horizontal logo lockup on a genuinely transparent background, with generous clearspace. A distinctive compact geometric emblem on the left, and the exact words "Course Downloader" on the right in carefully spaced contemporary sans-serif typography, highly legible, confident medium/semibold weight. The emblem should elegantly integrate a course/video shape and a downward download arrow into one cohesive bold silhouette using negative space; minimal, memorable, balanced, recognizable at small app-icon sizes. Restrained contemporary color treatment with excellent contrast, dark charcoal wordmark suitable for light interfaces and a vibrant cool-colored emblem. Flat vector-like graphic design, crisp edges, professional software identity. No gradients, no shadows, no 3D, no mockup, no extra text or tagline, no presentation board, no watermark, no repeated variants. The result is the usable logo asset itself.
+

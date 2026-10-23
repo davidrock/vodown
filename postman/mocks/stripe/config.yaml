@@ -1,0 +1,11 @@
+version: 1
+id: fcb1ef0c-e562-4cb7-ad5e-903bafd270e1
+name: stripe
+slug: stripe
+protocol: http
+interceptRequests: true
+port: 4900
+scenarios:
+  - name: default
+    path: ./default.js
+    default: true

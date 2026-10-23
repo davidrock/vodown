@@ -1,0 +1,18 @@
+@import 'tailwindcss';
+@source './*.tsx';
+@source '../../../apps/desktop/src/**/*.{ts,tsx}';
+@source '../../../apps/web/app/**/*.{ts,tsx}';
+@theme inline {
+  --color-background: var(--background); --color-foreground: var(--foreground);
+  --color-card: var(--card); --color-card-foreground: var(--foreground);
+  --color-primary: var(--primary); --color-primary-foreground: white;
+  --color-secondary: #f0eaff; --color-secondary-foreground: #6327c8;
+  --color-muted: #f3f2f6; --color-muted-foreground: #6f6b7c;
+  --color-border: #e9e6ee; --color-input: #ded9e6; --color-ring: #7c3aed;
+  --font-sans: 'Inter', 'Segoe UI', system-ui, sans-serif;
+}
+:root { color-scheme: light; --background:#faf9fc; --foreground:#231f2d; --card:#fff; --primary:#7529e8; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--background); color:var(--foreground); font-family:var(--font-sans); -webkit-font-smoothing:antialiased; }
+button, input { font:inherit; }
+button, a { -webkit-tap-highlight-color:transparent; }

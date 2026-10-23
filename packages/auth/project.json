@@ -1,0 +1,1 @@
+{"name":"auth","root":"packages/auth","projectType":"library","implicitDependencies":["ui"]}

@@ -1,0 +1,6 @@
+Libraries bundled unmodified from npm: @ffmpeg/ffmpeg 0.12.15 (MIT); @ffmpeg/core 0.12.10 (GPL-2.0-or-later build).
+Core: FFmpeg 5.1.4, Emscripten 3.1.40, single-thread SIMD build with the upstream codec libraries.
+Source and build instructions: https://github.com/ffmpegwasm/ffmpeg.wasm (packages/core, src, build and Dockerfile).
+FFmpeg source: https://github.com/FFmpeg/FFmpeg/tree/n5.1.4
+MIT, GPL-2.0 and LGPL-2.1 license texts accompany this distribution. See SOURCES.md for upstream component sources.
+No remote JavaScript or WebAssembly is fetched at runtime.

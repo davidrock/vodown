@@ -1,0 +1,7 @@
+Generated using built-in image_gen with transparent_background=true.
+
+Use case: logo-brand. Create a new original horizontal logo for "Vodown" on a genuinely transparent background. This is a new symbol and color direction.
+Emblem at left: a clever minimal folded filmstrip/ribbon descending into a downward chevron, with only two or three small rectangular film perforations on one edge to communicate VIDEO. A bold continuous geometric ribbon with one elegant fold and a clear downward flow, compact balanced silhouette, memorable and easy to recognize at small app-icon sizes. Do not use a screen/rounded rectangle, play-button tile, separate download arrow, book or letter V monogram. Avoid detailed realistic film reels. Rich solid violet/purple emblem, restrained and contemporary.
+To the right exact wordmark "Vodown" (uppercase V, all remaining letters lowercase), all in one consistent near-black charcoal color. Contemporary clean geometric sans serif. First three letters "Vod" subtly semibold, remaining "own" medium, just one small weight step, unified natural kerning without gap, same letter scale and baseline. Do not uppercase VOD or color the letters purple. The emphasis should be discreet.
+Premium contemporary software brand, flat vector-like graphic design, crisp smooth edges, generous clearspace, balanced horizontal lockup. No gradients, no shadows, no texture, no 3D, no mockup, no slogan, no domain name, no presentation board, no repeated alternatives. Deliver one usable logo asset on actual transparency.
+

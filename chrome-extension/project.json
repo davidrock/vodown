@@ -1,0 +1,1 @@
+{"name":"extension","root":"chrome-extension","targets":{"test":{"command":"node --test tests/*.test.js","options":{"cwd":"chrome-extension"}},"build":{"command":"node tools/package-extension.mjs","outputs":["{workspaceRoot}/dist/vodown-chrome.zip"]}}}

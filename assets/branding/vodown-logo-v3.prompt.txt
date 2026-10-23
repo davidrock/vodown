@@ -1,0 +1,7 @@
+Edited using built-in image_gen with transparent_background=true.
+
+Edit target: supplied Vodown logo. Use case: logo-brand / precise-object-edit.
+Create a variation preserving the blue video-frame emblem with play triangle and integrated downward arrow, horizontal composition, generous clearspace and transparent background.
+Change wordmark to EXACTLY "Vodown" (V uppercase, all remaining letters lowercase: o d o w n). The entire wordmark must be one consistent dark charcoal navy color. Highlight only the first three letters "Vod" VERY SUBTLY through a modest weight change: Vod semibold, own medium, about one weight step difference. Absolutely no blue letters, no all-uppercase acronym, no large difference in weight or size. Uniform font family, letter scale, baseline, natural continuous word kerning with no gap between d and o. Keep contemporary softly rounded geometric sans serif. The result should read first as one unified understated brand, and only upon close inspection show the subtle Vod emphasis.
+Clean flat vector-like edges, no gradients, no textures, no shadows, no 3D, no mockup, no extra text, no slogan. Preserve actual transparent background. Deliver one finished usable horizontal logo.
+

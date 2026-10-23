@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vodown</title><link rel="stylesheet" href="sidepanel.css"></head>
+<body>
+  <header>
+    <div class="brand-lockup"><h1><img src="assets/brand/vodown-logo.png" alt="Vodown" width="180" height="48"></h1><p>Suas aulas, disponíveis offline.</p></div>
+    <button id="open-settings" class="icon-button" aria-label="Abrir configurações" title="Configurações">⚙</button>
+  </header>
+  <main id="main-screen">
+    <section class="intro"><span class="eyebrow">WHOP + HOTMART + KIWIFY</span><h2>Leve o curso com você.</h2><p id="tab-context" role="status">Conferindo a aba atual…</p><button id="scan" class="primary" disabled>Atualizar aulas desta aba</button></section>
+    <div id="error" role="alert" hidden></div>
+    <section id="course" class="card" hidden><div class="course-top"><div><span id="platform" class="eyebrow"></span><h2 id="course-title"></h2></div><span id="count" class="count"></span></div><div class="select-row"><label><input type="checkbox" id="select-all"> Selecionar todas</label><span id="selected-count"></span></div><div id="lessons" class="lessons"></div></section>
+    <section class="card actions-card"><label id="include-subtitles-row" class="include-subtitles" hidden><input id="include-subtitles" type="checkbox"> Baixar legendas também</label><div class="actions"><button id="validate" class="secondary" disabled>Validar 1 aula</button><button id="download" class="primary" disabled>Baixar selecionadas</button></div><button id="subtitles" class="secondary subtitles-button" disabled hidden>Baixar só legendas</button></section>
+    <section class="card status"><div class="status-top"><span class="eyebrow">ANDAMENTO</span><button id="stop" class="text-button" hidden>Parar</button></div><p id="stage" role="status" aria-live="polite">Abra uma aula e busque o curso.</p><p id="current" class="muted" hidden></p><progress id="progress" max="100" value="0" aria-label="Progresso da fila"></progress><div id="results"></div><details><summary>Detalhes da operação</summary><ol id="logs"></ol></details></section>
+    <button id="folder" class="folder">Abrir Downloads do Chrome <span aria-hidden="true">↗</span></button>
+  </main>
+  <main id="settings-screen" hidden>
+    <div class="screen-title"><button id="close-settings" class="back-button" aria-label="Voltar">‹</button><div><span class="eyebrow">PREFERÊNCIAS</span><h2>Configurações</h2></div></div>
+    <section class="card settings-card">
+      <label for="quality">Qualidade do vídeo</label>
+      <select id="quality"><option value="auto">Automática · até 1080p</option><option value="1080">Até 1080p</option><option value="720">Até 720p</option><option value="480">Até 480p</option><option value="360">Até 360p</option></select>
+      <p>A opção automática usa duração, taxa do vídeo e o limite de tamanho definido abaixo.</p>
+      <label for="max-input">Limite por aula (MB)</label>
+      <input id="max-input" type="number" value="300" min="50" max="1500" step="1" inputmode="numeric" aria-describedby="limit-help">
+      <p id="limit-help">De 50 a 1500 MB, somando vídeo e áudio. Limites maiores consomem mais memória.</p>
+      <label for="download-folder">Pasta dentro de Downloads</label>
+      <input id="download-folder" type="text" value="Course Downloader" maxlength="180" autocomplete="off" aria-describedby="folder-help">
+      <p id="folder-help">Exemplo: <code>Meus cursos</code> ou <code>Cursos/Offline</code>. O Chrome não permite escolher uma pasta fora de Downloads.</p>
+      <label for="subtitle-format">Formato das legendas</label>
+      <select id="subtitle-format"><option value="srt">SubRip (.srt)</option><option value="vtt">WebVTT (.vtt)</option></select>
+      <p>Usado tanto para “Baixar só legendas” quanto para incluir legendas com o vídeo na Whop.</p>
+      <label for="subtitle-language">Idioma padrão das legendas</label>
+      <select id="subtitle-language" aria-describedby="subtitle-help"><option value="original">Idioma original do vídeo</option><option value="pt">Português</option><option value="pt-br">Português (Brasil)</option><option value="pt-pt">Português (Portugal)</option><option value="en">Inglês</option><option value="es">Espanhol</option><option value="fr">Francês</option><option value="de">Alemão</option><option value="it">Italiano</option><option value="pl">Polonês</option><option value="ru">Russo</option><option value="nl">Holandês</option><option value="tr">Turco</option><option value="sv">Sueco</option><option value="uk">Ucraniano</option></select>
+      <p id="subtitle-help">Uma faixa por aula. O idioma original segue os dados do áudio; se o player não informar, usa a legenda padrão ou a primeira disponível.</p>
+      <p id="settings-feedback" class="feedback" role="status" aria-live="polite"></p>
+      <button id="save-settings" class="primary">Salvar configurações</button>
+    </section>
+  </main>
+  <footer>Processamento dentro do Chrome. Nenhum aplicativo externo.<br>Mantenha a aba do curso aberta durante a fila. Vídeos com DRM não são suportados.</footer>
+  <script type="module" src="sidepanel.js"></script>
+</body></html>

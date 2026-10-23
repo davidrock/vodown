@@ -1,0 +1,17 @@
+[project]
+name = "whop-local-downloader"
+version = "0.1.0"
+description = "Download local de aulas Whop e Hotmart acessíveis pela sua conta"
+requires-python = ">=3.11"
+dependencies = ["playwright>=1.55,<2", "yt-dlp>=2026.8.19", "pycryptodomex>=3.23,<4"]
+
+[project.scripts]
+whop-download = "whop_downloader:main"
+hotmart-download = "hotmart_downloader:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+include = ["whop_downloader.py", "hotmart_downloader.py"]

@@ -1,0 +1,1 @@
+{"name":"api-tests","root":"apps/api-tests","implicitDependencies":["api"],"targets":{"test":{"command":"dotnet test apps/api-tests --configuration Release","cache":false}}}

@@ -1,0 +1,5 @@
+simulation: vodown-billing
+routing: path
+mocks:
+  - routeKey: stripe
+    path: ../mocks/stripe/config.yaml

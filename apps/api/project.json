@@ -1,0 +1,1 @@
+{"name":"api","root":"apps/api","targets":{"serve":{"command":"node tools/api-local.mjs","continuous":true},"build":{"command":"dotnet build apps/api/Vodown.API --configuration Release","outputs":["{projectRoot}/Vodown.API/bin/Release"]}}}

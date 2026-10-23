@@ -1,0 +1,1 @@
+<Project Sdk="Microsoft.NET.Sdk"><ItemGroup><ProjectReference Include="../Vodown.Shared/Vodown.Shared.csproj"/></ItemGroup></Project>

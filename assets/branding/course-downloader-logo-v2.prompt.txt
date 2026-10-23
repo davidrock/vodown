@@ -1,0 +1,6 @@
+Generated using the built-in image_gen tool with transparent_background=true.
+
+Use case: logo-brand.
+Design an original premium logo for the desktop app "Course Downloader", a tool for organizing and downloading authorized course videos.
+A single finished horizontal logo lockup, actual transparent background. New design direction: a bold ingenious geometric letter C emblem whose lower terminal becomes a downward arrow through negative space, subtly suggesting a course/library container. One cohesive compact shape, strong recognizable silhouette for small desktop and browser extension icons. No video play triangle, no generic blue video rectangle. Emblem in a rich solid emerald/teal, wordmark in near-black charcoal. Exact text "Course Downloader" at right, contemporary geometric sans serif, refined medium weight, careful optical spacing, one line, excellent readability. Flat clean vector-like shapes, visually balanced generous clearspace. Professional understated software brand. No gradients, no texture, no shadows, no 3D, no mockup, no slogan, no extra labels or repeated alternatives. Deliver only the usable logo on transparency.
+

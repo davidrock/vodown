@@ -1,0 +1,34 @@
+{
+  "name": "web",
+  "root": "apps/web",
+  "implicitDependencies": [
+    "ui",
+    "auth"
+  ],
+  "targets": {
+    "serve": {
+      "command": "pnpm --dir apps/web serve",
+      "continuous": true
+    },
+    "build": {
+      "command": "pnpm --dir apps/web build",
+      "inputs": [
+        "default",
+        "^default",
+        "sharedGlobals",
+        {
+          "env": "NEXT_PUBLIC_SUPABASE_URL"
+        },
+        {
+          "env": "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
+        },
+        {
+          "env": "NEXT_PUBLIC_API_URL"
+        }
+      ],
+      "outputs": [
+        "{projectRoot}/.next"
+      ]
+    }
+  }
+}

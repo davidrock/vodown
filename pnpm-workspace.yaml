@@ -1,0 +1,9 @@
+packages:
+  - apps/desktop
+  - apps/web
+  - packages/*
+allowBuilds:
+  esbuild: true
+  nx: true
+  '@swc/core': true
+  sharp: true

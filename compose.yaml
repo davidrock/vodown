@@ -1,0 +1,19 @@
+name: vodown
+services:
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: vodown
+      POSTGRES_USER: vodown
+      POSTGRES_PASSWORD: ${VODOWN_LOCAL_DB_PASSWORD:?Set VODOWN_LOCAL_DB_PASSWORD}
+    ports:
+      - '127.0.0.1:55439:5432'
+    volumes:
+      - vodown-postgres:/var/lib/postgresql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U vodown -d vodown']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+volumes:
+  vodown-postgres:

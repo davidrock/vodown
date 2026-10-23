@@ -1,0 +1,94 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Stripe test dependency subset",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.stripe.com"
+    }
+  ],
+  "paths": {
+    "/v1/prices/{id}": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Stripe contract subset",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/customers": {
+      "post": {
+        "responses": {
+          "200": {
+            "description": "Stripe contract subset",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/subscriptions": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Stripe contract subset",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/checkout/sessions": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Stripe contract subset",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/billing_portal/sessions": {
+      "post": {
+        "responses": {
+          "200": {
+            "description": "Stripe contract subset",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

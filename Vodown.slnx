@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/apps/" />
+  <Folder Name="/apps/api-tests/">
+    <Project Path="apps/api-tests/Vodown.Tests.csproj" />
+  </Folder>
+  <Folder Name="/apps/api/">
+    <Project Path="apps/api/Vodown.API/Vodown.API.csproj" />
+    <Project Path="apps/api/Vodown.Repository/Vodown.Repository.csproj" />
+    <Project Path="apps/api/Vodown.Service/Vodown.Service.csproj" />
+    <Project Path="apps/api/Vodown.Shared/Vodown.Shared.csproj" />
+  </Folder>
+</Solution>
