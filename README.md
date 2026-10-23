@@ -1,154 +1,107 @@
 # Vodown
 
-Monorepo Nx com app desktop Tauri/React, landing e conta em Next.js, API ASP.NET Core e extensão Chrome. A identidade aprovada está aplicada nas interfaces.
+O Vodown é um app para organizar e guardar localmente as aulas que o usuário tem autorização para baixar. A proposta é combinar uma extensão do Chrome, que encontra aulas na plataforma aberta pelo usuário, com um app desktop para organizar downloads e arquivos.
 
-- [Arquitetura e estado da implementação](docs/ARCHITECTURE.md)
-- [Como executar, configurar e testar](docs/DEVELOPMENT.md)
-- Desktop preview: `pnpm dev`; app nativo: `pnpm dev:desktop`; API: `pnpm dev:api`; área web: `pnpm dev:web`.
+> O projeto está em desenvolvimento. A extensão autônoma existente continua utilizável, e a base de autenticação e cobrança está preparada em ambiente de testes. O motor nativo do desktop e a integração de planos na extensão ainda não foram concluídos.
 
-Base em desenvolvimento: login/cadastro Supabase, PostgreSQL remoto migrado, histórico SQLite e cobrança Stripe Sandbox com planos de €5/mês, €25/ano e €100 em compra única. Checkout, portal e reconciliação de permissões estão implementados; o motor de downloads nativo e o envio de aulas da extensão ao desktop ainda estão pendentes. A extensão autônoma continua funcional e ainda não aplica login/planos.
+## O que existe hoje
 
-## Ferramentas locais anteriores
+- **Extensão Chrome:** extensão Manifest V3 com captura e downloads por navegador para Whop, Hotmart e Kiwify, nos formatos de vídeo observados e implementados. Inclui legendas opcionais e opções de qualidade e destino. A versão independente não exige Python nem FFmpeg instalados no computador. Ela ainda não faz login no Vodown nem aplica os limites dos planos.
+- **Desktop:** app Tauri 2 com interface React, Vite e TypeScript. Já tem identidade visual, tela de conta, preferências e histórico local SQLite. A interface está em desenvolvimento; o motor nativo de downloads e a comunicação entre o app e a extensão ainda estão pendentes.
+- **Site e conta:** app Next.js com landing page, cadastro e login Supabase por e-mail, além de uma área de cobrança. O fluxo de checkout usa a página hospedada do Stripe.
+- **API:** ASP.NET Core 10 com autenticação por JWT do Supabase, consulta de permissões, cobrança Stripe e acesso ao PostgreSQL.
+- **Dados:** Supabase Auth administra as contas. O PostgreSQL guarda assinaturas, licenças do plano vitalício e recibos de webhooks. O SQLite local guarda o histórico do desktop. Os vídeos permanecem no computador do usuário.
 
-**Extensão Chrome autônoma:** veja [EXTENSAO.md](EXTENSAO.md).
-Baixa Whop e Hotmart em MP4 sem Python ou FFmpeg instalado no computador.
+## Planos planejados
 
-O projeto também inclui um coletor Hotmart. Veja [HOTMART.md](HOTMART.md):
-`./validar-hotmart.sh 'URL'` verifica uma aula sem baixar os vídeos;
-`./baixar-hotmart.sh 'URL' --limit 1` faz um download de teste.
+| Plano | Preço | Acesso previsto |
+| --- | ---: | --- |
+| FREE | Gratuito | Uma aula por ação manual na extensão |
+| PRO mensal | €5/mês | Recursos PRO durante a assinatura |
+| PRO anual | €25/ano | Recursos PRO durante a assinatura |
+| PRO vitalício | €100, pagamento único | Licença permanente dos recursos PRO do Vodown |
 
-Script gratuito, sem quota ou serviço pago, para guardar as aulas de vídeo que
-a sua conta consegue abrir normalmente na Whop. Implementação própria em Python,
-Playwright, yt-dlp e FFmpeg; não utiliza código das extensões comerciais.
+Os preços já estão cadastrados no Stripe de testes. O Checkout e o processamento de eventos ainda não estão abertos para cobranças reais. “Vitalício” refere-se à licença do Vodown; não altera os direitos ou a duração de acesso aos cursos nas plataformas de origem.
 
-## Usar neste Mac
+## Arquitetura
 
-As dependências Python estão instaladas em `.venv`; FFmpeg e Chrome já existem
-neste computador. No Terminal:
+Este é um monorepo Nx com aplicações independentes e pacotes compartilhados:
 
-```bash
-cd /Users/david.martinelli/dev/coursedownloader
-./baixar.sh
+```text
+apps/
+  desktop/       Tauri 2 + Rust + React
+  web/           Next.js: site e conta
+  api/           ASP.NET Core: autenticação, permissões e cobrança
+  api-tests/     testes da API e do domínio
+packages/
+  auth/          integração e componentes de autenticação Supabase
+  ui/            componentes e estilos compartilhados
+chrome-extension/ extensão Chrome Manifest V3
 ```
 
-1. Abre um Chrome com perfil separado, dentro deste projeto.
-2. Faça login na Whop nesse navegador e abra uma aula do curso. Expanda os módulos
-   para que todos os botões das aulas apareçam na lista.
-3. Volte ao Terminal e pressione Enter.
-4. O script abre cada aula, captura a URL do player, baixa a maior qualidade
-   oferecida e salva um MP4 com o número e nome da aula.
+A API está dividida em quatro camadas: **API** para endpoints e autenticação, **Service** para regras e casos de uso, **Repository** para PostgreSQL/EF Core e **Shared** para objetos de valor e validações do domínio. O Supabase é a fonte de identidade; a API valida o JWT e determina o plano no servidor. O frontend não pode conceder acesso PRO por conta própria.
 
-O link fornecido do Ecom Paradise já é o padrão. Para outro curso com o mesmo
-player/layout:
+## Tecnologias
 
-```bash
-./baixar.sh 'https://whop.com/.../app/courses/cors_.../lessons/lesn_.../'
+- Monorepo e tarefas: Nx, pnpm e TypeScript.
+- Desktop: Tauri 2, Rust, React e Vite.
+- Site: Next.js.
+- Interface: componentes locais no padrão shadcn/ui, Radix e Tailwind CSS.
+- API e domínio: C# / ASP.NET Core 10.
+- Autenticação e banco: Supabase Auth e PostgreSQL com Entity Framework Core/Npgsql.
+- Pagamentos: Stripe Checkout, Customer Portal e webhooks assinados.
+- Histórico local: SQLite.
+
+## Começar a desenvolver
+
+### Requisitos
+
+Node.js 24, pnpm 11 e .NET SDK 10. Para compilar ou abrir o desktop nativo, também são necessários Rust e os pré-requisitos do Tauri para o sistema operacional. Para PostgreSQL local, use Docker Compose.
+
+### Instalar dependências
+
+```sh
+pnpm install --frozen-lockfile
+dotnet tool restore
+dotnet restore Vodown.slnx
 ```
 
-Os vídeos ficam em `downloads/Ecom Paradise/`. Para mudar o destino ou testar
-somente uma aula:
+### Executar as aplicações
 
-```bash
-./baixar.sh --output 'downloads/Meu curso' --limit 1
+```sh
+pnpm dev:web       # site e conta em http://localhost:3000
+pnpm dev:api       # API em http://localhost:5080
+pnpm dev           # preview web da interface desktop
+pnpm dev:desktop   # janela nativa Tauri
 ```
 
-### Download já realizado
+Para autenticação local, copie `.env.example` para `.env` e configure as variáveis públicas do Supabase. O app web também precisa das variáveis `NEXT_PUBLIC_SUPABASE_*` e `NEXT_PUBLIC_API_URL` em `apps/web/.env.local`. A API precisa da conexão PostgreSQL e das chaves de teste do Stripe em configuração local privada. Nunca coloque senhas do banco ou segredos do Stripe em arquivos versionados, no frontend ou na extensão.
 
-As **9 aulas** do link fornecido já estão em `downloads/Ecom Paradise/`: todas
-em **1920×1080 com áudio**, aproximadamente **70,2 minutos** e **539,8 MB** no
-total. A validação com ffprobe conferiu a duração de cada arquivo contra a
-duração exibida pela Whop, com tolerância de 3 segundos. Detalhes em
-`downloads/Ecom Paradise/verification.json`. Uma segunda execução reconheceu
-os nove arquivos completos e não transferiu novos segmentos.
+Veja [Desenvolvimento](docs/DEVELOPMENT.md) para configurar ambiente, banco, migrations, Stripe Sandbox e testes. Veja [Arquitetura](docs/ARCHITECTURE.md) para o desenho das camadas e o estado das integrações.
 
-Pode interromper com Ctrl+C e executar novamente. `progress.json` registra as
-aulas completas; arquivos parciais ficam em `.partial/`. O script verifica o MP4
-com ffprobe antes de registrar conclusão. Na próxima execução pula os arquivos
-concluídos que ainda têm tamanho e estrutura válidos.
+## Comandos úteis
 
-## Apenas investigar / usar URLs já capturadas
-
-```bash
-.venv/bin/python whop_downloader.py inspect --chrome
-.venv/bin/python whop_downloader.py from-manifest .local/course.private.json
+```sh
+pnpm check          # checagem TypeScript
+pnpm build          # builds desktop, web e API
+pnpm test           # testes da API e da extensão
+pnpm package:extension
 ```
 
-`inspect` navega pelas aulas e salva `streams.private.json` sem baixar os vídeos.
-`from-manifest` aceita uma lista JSON com `index`, `title`, `page_url`,
-`playback_id`, `url` e `drm`. As URLs expiram: se receber 401/403, use novamente
-`download` para obter URLs novas pelo player autenticado. Esse modo tenta uma
-recarga normal e uma nova captura quando o download falha.
+As verificações de PostgreSQL e Stripe Sandbox exigem configuração local própria; detalhes e limites estão em [Validação](docs/VALIDATION.md). Não use banco de produção para testes.
 
-## Como funciona o streaming deste curso
+## Extensão independente e ferramentas anteriores
 
-Verificado no navegador em 9 de outubro de 2026:
+A extensão pode ser carregada no Chrome pelo diretório `chrome-extension/` em modo de desenvolvedor. Consulte [guia da extensão](chrome-extension/LEIA-ME.md) para instalação e opções. O comportamento específico da captura ainda está isolado da integração de conta do produto.
 
-- O curso **Free Dropshipping Masterclass / Ecom Paradise** apresenta 9 aulas de
-  vídeo na lista e usa o componente `mux-player` (`mux-player-react` 3.13.0).
-- O player contém um `mux-video` em um Shadow DOM aberto. Seu atributo `src`
-  fornece `https://stream.mux.com/<playback-id>.m3u8?token=<JWT>`.
-- O manifesto principal oferece resoluções diferentes e uma faixa de áudio
-  separada. As playlists de qualidade ficam na CDN `*.edgemv.mux.com`.
-- O elemento HTML de vídeo usa uma URL `blob:` porque o player reúne segmentos
-  usando Media Source Extensions. Essa URL representa dados temporários no
-  navegador; o endereço útil para baixar é o manifesto HLS.
-- Miniaturas também têm JWTs, mas são tokens com audiência `t`; o vídeo usa
-  audiência `v`. Copiar o token da imagem não dá acesso ao vídeo.
-- Nenhum token é gerado, modificado ou forjado. São usadas somente URLs que o
-  player recebeu durante o acesso normal da conta.
+O repositório também mantém scripts locais anteriores para Whop e Hotmart. Eles são ferramentas separadas do app desktop e não representam suporte universal a cursos ou plataformas. Consulte [Whop](EXTENSAO.md) e [Hotmart](HOTMART.md) antes de usá-los.
 
-A [documentação da Mux sobre reprodução assinada](https://www.mux.com/docs/guides/secure-video-playback)
-explica a expiração dos JWTs e os diferentes tipos de token. As playlists
-descrevem segmentos; o [yt-dlp](https://github.com/yt-dlp/yt-dlp) baixa as faixas e
-o FFmpeg reúne vídeo e áudio em MP4, sem reencodar.
+## Documentação
 
-Há também um [projeto público sem cobrança declarada, mlapping/whop-downloader](https://github.com/mlapping/whop-downloader),
-que usa Playwright e yt-dlp. Sua documentação descreve navegação por teclas e a
-arquitetura antiga com iframe. Neste projeto a navegação usa os botões de aulas
-observados no layout atual e confere título/ID antes de associar um stream à aula.
+- [Arquitetura e estado do produto](docs/ARCHITECTURE.md)
+- [Configuração e desenvolvimento](docs/DEVELOPMENT.md)
+- [Contrato da API de cobrança](docs/BILLING-CONTRACT.md)
+- [Verificações realizadas e limitações](docs/VALIDATION.md)
+- [Guia da extensão Chrome](chrome-extension/LEIA-ME.md)
 
-## Limites e dados locais
-
-- O coletor atende ao layout observado, com botões `Multimedia • duração` e Mux
-  Player. Lista apenas aulas renderizadas; módulos recolhidos, listas virtualizadas,
-  PDFs, quizzes e players externos exigem adaptação. Não é uma promessa de
-  compatibilidade com todos os cursos Whop.
-- A inspeção verifica o manifesto principal e suas playlists antes de transferir
-  os segmentos. Se detectar chave de criptografia ou DRM, interrompe aquela
-  aula. Não há extração de chaves, acesso a servidores de licença ou remoção
-  de marcas d'água. A Mux documenta [DRM separadamente](https://www.mux.com/docs/guides/protect-videos-with-drm).
-- O login pertence ao perfil local `.whop-profile/`; não pede senha pelo Terminal.
-  Esse perfil e os JSONs com URLs assinadas são privados e estão no `.gitignore`.
-  Não os compartilhe: podem conceder acesso enquanto estiverem válidos.
-- As URLs do manifesto privado existente foram capturadas da sessão já aberta
-  no seu Chrome. O fluxo automático abre um perfil próprio e requer login inicial.
-
-## Instalar em outro computador
-
-Requer Python 3.11+, uv, FFmpeg e Chrome:
-
-```bash
-uv sync --cache-dir .local/uv-cache --system-certs
-brew install ffmpeg
-./baixar.sh
-```
-
-Se preferir Chromium do Playwright, instale-o e omita `--chrome`:
-
-```bash
-.venv/bin/playwright install chromium
-.venv/bin/python whop_downloader.py download
-```
-
-## Testes
-
-```bash
-.venv/bin/python -m unittest discover -s tests -v
-```
-
-Teste adicional de navegação e captura em Chrome isolado, com página de teste
-inteiramente local e sem acessar a Whop:
-
-```bash
-WHOP_BROWSER_TEST=1 .venv/bin/python -m unittest discover -s tests -v
-```
+Use a ferramenta apenas com conteúdo cujo download esteja autorizado para sua conta. O Vodown não deve contornar DRM, controles de acesso ou restrições da plataforma.
