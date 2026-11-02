@@ -77,23 +77,24 @@ export function selectSubtitles(tracks,language='original',audio=[],originalLang
 }
 
 export async function downloadSubtitles(lesson,settings,signal) {
-  if(lesson.platform!=='whop')return {files:[],warnings:[],available:0};
+  if(!['whop','hotmart','kiwify'].includes(lesson.platform))return {files:[],warnings:[],available:0};
   if(lesson.drm||lesson.encryption)throw new StreamError('Vídeo protegido por DRM.',{protectedVideo:true});
-  const read=async url=>new TextDecoder('utf-8',{fatal:true}).decode(await resource(url,'whop',signal,MAX_TEXT));
-  const root=parsePlaylist(await read(lesson.url),lesson.url,'whop');
+  const read=async url=>new TextDecoder('utf-8',{fatal:true}).decode(await resource(url,lesson.platform,signal,MAX_TEXT));
+  const root=lesson.subtitles?.length && !new URL(lesson.url).pathname.endsWith('.m3u8')?{subtitles:[],audio:[]}:parsePlaylist(await read(lesson.url),lesson.url,lesson.platform);
   const offered=[...root.subtitles,...(lesson.subtitles||[])];
   if(!['srt','vtt'].includes(settings.subtitleFormat))throw new StreamError('Escolha SRT ou VTT para as legendas.');
   const tracks=selectSubtitles(offered,settings.subtitleLanguage,root.audio,lesson.originalLanguage);
   if(tracks.length>50)throw new StreamError('O player ofereceu faixas de legenda demais.');
   const files=[],warnings=[];
+  if(offered.length&&!tracks.length)warnings.push("A plataforma tem legendas, mas não no idioma escolhido. Altere o idioma de legenda na extensão.");
   for(const track of tracks) {
     const index=offered.indexOf(track);
     const label=track.LANGUAGE||track.language||track.NAME||track.label||'und';
     try {
-      trustedUrl(track.url,'whop');
+      trustedUrl(track.url,lesson.platform);
       const source=await read(track.url),parts=[];
       if(source.replace(/^\uFEFF/,'').trimStart().startsWith('#EXTM3U')) {
-        const playlist=parsePlaylist(source,track.url,'whop');
+        const playlist=parsePlaylist(source,track.url,lesson.platform);
         if(!playlist.end||playlist.variants.length||playlist.segments.length>3000||!playlist.segments.length)throw new StreamError('Playlist de legenda incompleta ou não suportada.');
         let size=0,start=0;
         for(const segment of playlist.segments) {

@@ -1,13 +1,17 @@
 export function courseScope(raw) {
   const url = new URL(raw);
   if (url.protocol !== 'https:') throw new Error('Abra um curso na Whop, Hotmart ou Kiwify.');
+  if(url.hostname==='dashboard.kiwify.com') {
+    const match=url.pathname.match(/^\/course\/premium\/([a-f0-9-]{36})\/?$/i);
+    if(match)return {platform:'kiwify',key:`kiwify:${match[1]}`,slug:match[1],basePath:url.pathname};
+  }
   if (url.hostname === 'members.kiwify.com') {
     const match=url.pathname.match(/^\/([a-f0-9-]{36})\/([a-f0-9-]{36})\/([a-f0-9-]{36})(?:\/classes)?\/?$/i);
     if(match)return {platform:'kiwify',key:`kiwify:${match[1]}:${url.searchParams.get('club')||''}`,slug:match[1],basePath:`/${match[1]}`};
   }
   if (url.hostname === 'hotmart.com') {
-    const match = url.pathname.match(/^\/[^/]+\/club\/([^/]+)\/products\/(\d+)(?:\/content\/[A-Za-z0-9_-]+)?\/?$/);
-    if (match) return {platform:'hotmart', key:`hotmart:${match[1]}:${match[2]}`, slug:match[1], basePath:url.pathname.split('/content/')[0].replace(/\/$/, '')};
+    const match = url.pathname.match(/^(\/[^/]+\/club\/([^/]+)\/products\/(\d+))(?:\/track\/([A-Za-z0-9_-]+))?(?:\/content\/[A-Za-z0-9_-]+)?\/?$/);
+    if (match) return {platform:'hotmart', key:`hotmart:${match[2]}:${match[3]}`, slug:match[2], basePath:match[1],trackId:match[4]||null};
   }
   if (url.hostname === 'whop.com') {
     const match = url.pathname.match(/^(.*\/app\/courses\/(cors_[A-Za-z0-9]+))(?:\/lessons\/[A-Za-z0-9_]+)?\/?$/);
@@ -41,6 +45,8 @@ export function publicState(state) {
     operation: state.operation,
     contextKey: state.contextKey,
     version: state.version||0,
+    account: state.account ? {configured:state.account.configured===true,email:state.account.email||null,plan:state.account.plan||null} : null,
+    accountBusy: state.accountBusy===true,
   };
 }
 

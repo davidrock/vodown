@@ -1,21 +1,21 @@
 <!doctype html>
-<html lang="pt-BR">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vodown</title><link rel="stylesheet" href="sidepanel.css"></head>
-<body>
-  <header>
-    <div class="brand-lockup"><h1><img src="assets/brand/vodown-logo.png" alt="Vodown" width="180" height="48"></h1><p>Suas aulas, disponíveis offline.</p></div>
-    <button id="open-settings" class="icon-button" aria-label="Abrir configurações" title="Configurações">⚙</button>
-  </header>
-  <main id="main-screen">
-    <section class="intro"><span class="eyebrow">WHOP + HOTMART + KIWIFY</span><h2>Leve o curso com você.</h2><p id="tab-context" role="status">Conferindo a aba atual…</p><button id="scan" class="primary" disabled>Atualizar aulas desta aba</button></section>
-    <div id="error" role="alert" hidden></div>
-    <section id="course" class="card" hidden><div class="course-top"><div><span id="platform" class="eyebrow"></span><h2 id="course-title"></h2></div><span id="count" class="count"></span></div><div class="select-row"><label><input type="checkbox" id="select-all"> Selecionar todas</label><span id="selected-count"></span></div><div id="lessons" class="lessons"></div></section>
-    <section class="card actions-card"><label id="include-subtitles-row" class="include-subtitles" hidden><input id="include-subtitles" type="checkbox"> Baixar legendas também</label><div class="actions"><button id="validate" class="secondary" disabled>Validar 1 aula</button><button id="download" class="primary" disabled>Baixar selecionadas</button></div><button id="subtitles" class="secondary subtitles-button" disabled hidden>Baixar só legendas</button></section>
-    <section class="card status"><div class="status-top"><span class="eyebrow">ANDAMENTO</span><button id="stop" class="text-button" hidden>Parar</button></div><p id="stage" role="status" aria-live="polite">Abra uma aula e busque o curso.</p><p id="current" class="muted" hidden></p><progress id="progress" max="100" value="0" aria-label="Progresso da fila"></progress><div id="results"></div><details><summary>Detalhes da operação</summary><ol id="logs"></ol></details></section>
-    <button id="folder" class="folder">Abrir Downloads do Chrome <span aria-hidden="true">↗</span></button>
-  </main>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vodown</title><link rel="stylesheet" href="sidepanel.css"></head><body>
+<header class="app-header"><img src="assets/brand/vodown-logo.png" alt="Vodown" width="124" height="34"><button id="open-settings" class="icon-button" aria-label="Abrir ajustes" title="Ajustes">⚙</button></header>
+<nav class="panel-nav" aria-label="Navegação"><button data-screen="main" aria-current="page">Curso</button><button data-screen="account">Conta</button><button data-screen="settings">Ajustes</button></nav>
+<main id="main-screen">
+  <div class="connection-strip"><span class="connection-light" aria-hidden="true"></span><p id="desktop-status" role="status">Conferindo conexão…</p><div class="connection-buttons"><button id="desktop-check" class="text-button" type="button">Verificar</button><button id="desktop-pair" class="secondary" type="button">Conectar desktop</button></div></div>
+  <section class="intro"><h1>Seu curso, pronto para baixar.</h1><p id="tab-context" role="status">Conferindo a aba atual…</p><button id="scan" class="secondary" disabled>Atualizar curso</button></section>
+  <div id="error" role="alert" hidden></div>
+  <section id="course" class="card course-card" hidden><div class="course-top"><div><span id="platform" class="eyebrow"></span><h2 id="course-title"></h2></div><span id="count" class="count"></span></div><p id="desktop-handoff" class="handoff-note" hidden>Curso enviado ao desktop. Escolha lá as aulas, os módulos ou o curso completo.</p>
+    <details id="lesson-picker"><summary>Escolher aulas para baixar no Chrome</summary><div class="select-row"><label><input type="checkbox" id="select-all"> Todas as aulas</label><span id="selected-count"></span></div><div id="lessons" class="lessons"></div>
+      <div class="actions-card"><label id="include-subtitles-row" class="include-subtitles" hidden><input id="include-subtitles" type="checkbox"> Incluir legendas</label><div class="actions"><button id="download" class="primary" disabled>Baixar selecionadas</button><button id="validate" class="text-button" disabled>Testar uma aula</button></div><button id="subtitles" class="secondary subtitles-button" disabled hidden>Baixar só legendas</button></div>
+    <button id="folder" class="folder">Abrir Downloads do Chrome <span aria-hidden="true">↗</span></button></details>
+  </section>
+  <section id="operation-status" class="card status" hidden><div class="status-top"><span class="eyebrow">ANDAMENTO</span><button id="stop" class="text-button" hidden>Cancelar</button></div><p id="stage" role="status" aria-live="polite"></p><p id="current" class="muted" hidden></p><progress id="progress" max="100" value="0" aria-label="Progresso do download"></progress><div id="results"></div><details><summary>Ver detalhes</summary><ol id="logs"></ol></details></section>
+</main>
+<main id="account-screen" hidden><div class="screen-title"><div><h1>Minha conta</h1><p>Acesso e plano do Vodown.</p></div></div>    <section class="card" aria-label="Conta Vodown"><div id="account-logged-out"><h2>Entre na sua conta</h2><p id="account-message" class="muted">Use a mesma conta do desktop.</p><form id="account-form"><label for="account-email">E-mail</label><input id="account-email" type="email" autocomplete="email" required><label for="account-password">Senha</label><input id="account-password" type="password" autocomplete="current-password" required><button id="account-sign-in" class="primary" type="submit">Entrar</button></form><button id="account-google" class="secondary account-google" type="button">Entrar com Google</button></div><div id="account-logged-in" hidden><p id="account-summary"></p><button id="account-refresh" class="text-button" type="button">Atualizar plano</button><button id="account-sign-out" class="text-button" type="button">Sair</button></div><p id="account-error" class="feedback error" role="alert" hidden></p></section></main>
   <main id="settings-screen" hidden>
-    <div class="screen-title"><button id="close-settings" class="back-button" aria-label="Voltar">‹</button><div><span class="eyebrow">PREFERÊNCIAS</span><h2>Configurações</h2></div></div>
+    <div class="screen-title"><button id="close-settings" class="back-button" aria-label="Voltar">‹</button><div><span class="eyebrow">AJUSTES</span><h2>Configurações</h2></div></div>
     <section class="card settings-card">
       <label for="quality">Qualidade do vídeo</label>
       <select id="quality"><option value="auto">Automática · até 1080p</option><option value="1080">Até 1080p</option><option value="720">Até 720p</option><option value="480">Até 480p</option><option value="360">Até 360p</option></select>
@@ -36,6 +36,4 @@
       <button id="save-settings" class="primary">Salvar configurações</button>
     </section>
   </main>
-  <footer>Processamento dentro do Chrome. Nenhum aplicativo externo.<br>Mantenha a aba do curso aberta durante a fila. Vídeos com DRM não são suportados.</footer>
-  <script type="module" src="sidepanel.js"></script>
-</body></html>
+<footer><span id="extension-version"></span></footer><script type="module" src="sidepanel.js"></script></body></html>

@@ -12,20 +12,7 @@
     },
     "build": {
       "command": "pnpm --dir apps/web build",
-      "inputs": [
-        "default",
-        "^default",
-        "sharedGlobals",
-        {
-          "env": "NEXT_PUBLIC_SUPABASE_URL"
-        },
-        {
-          "env": "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
-        },
-        {
-          "env": "NEXT_PUBLIC_API_URL"
-        }
-      ],
+      "inputs": ["default", "^default", "sharedGlobals"],
       "outputs": [
         "{projectRoot}/.next"
       ]

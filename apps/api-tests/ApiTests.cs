@@ -28,6 +28,11 @@ public sealed class ApiTests : IClassFixture<TestApi>
         Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/health/live")).StatusCode);
         Assert.Equal(HttpStatusCode.ServiceUnavailable, (await client.GetAsync("/health/ready")).StatusCode);
     }
+    [Fact] public async Task LocalDevelopmentLicenseIsUnavailableByDefault()
+    {
+        using var client=Client();
+        Assert.Equal(HttpStatusCode.NotFound,(await client.PostAsync("/v1/development/local-pro",null)).StatusCode);
+    }
     [Fact] public async Task MissingTokenIsUnauthorized()
     {
         using var client = factory.CreateClient();

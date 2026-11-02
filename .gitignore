@@ -11,6 +11,7 @@ downloads/
 .DS_Store
 chrome-extension/node_modules/
 node_modules/
+.pnpm-store/
 .nx/
 **/bin/
 **/obj/
@@ -45,3 +46,15 @@ dist/
 chrome-extension.zip
 **/TestResults/
 *.trx
+# Generated from public, environment-specific extension settings.
+chrome-extension/vendor/supabase/config.js
+chrome-extension/vendor/supabase/client.js
+# Local databases and sidecars.
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
+# Local working snapshots; Linear remains the project plan source of truth.
+/docs/IMPLEMENTATION-STATUS.md
+/docs/linear-tasks.json
+/docs/roadmap.json

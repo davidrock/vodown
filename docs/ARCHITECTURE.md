@@ -3,11 +3,11 @@
 ## Aplicações e dados
 
 - `apps/desktop`: Tauri 2, Rust, React, Vite e TypeScript. SQLite em `app_data_dir()/vodown.sqlite3` para histórico/fila local. Nenhum vídeo ou URL de playback é enviado ao backend.
-- `chrome-extension`: extensão existente MV3, agora com a identidade Vodown. Motor browser/WASM preservado. Ainda não migrada para React nem conectada à autenticação/planos.
+- `chrome-extension`: extensão MV3 com motor browser/WASM e login Supabase por e-mail ou Google; a API autoriza a seleção e cada nova aula. A sessão persiste em `chrome.storage.local` restrito a contextos confiáveis, com renovação automática e remoção ao sair. Configuração pública implementada; sem conta configurada, novos downloads são bloqueados.
 - `apps/web`: Next.js para landing e área da conta. Checkout hospedado e portal iniciados pela API; as permissões são determinadas no servidor.
 - `apps/api`: ASP.NET Core 10. PostgreSQL do Supabase para assinaturas, clientes Stripe, licenças de compra única e recibos de eventos.
 - `packages/ui`: componentes locais no padrão shadcn/ui, Radix Slot, Tailwind 4 e tokens da identidade violeta.
-- `packages/auth`: cliente Supabase e formulário de login compartilhado. Desktop com sessão em memória. Web com sessão persistente gerida pelo Supabase no navegador e callbacks PKCE. Login e cadastro por e-mail/senha; recuperação de senha, OAuth via navegador e armazenamento seguro nativo ainda pendentes.
+- `packages/auth`: cliente Supabase e formulário de login compartilhado. O desktop guarda uma chave de criptografia no cofre do sistema e a sessão cifrada com AES-256-GCM em SQLite local separado; isso evita o limite de tamanho de credenciais do Windows. A versão inicial com sessão diretamente no cofre é migrada na leitura. O preview no navegador mantém a sessão em memória. Web usa sessão persistente gerida pelo Supabase no navegador e callbacks PKCE. Recuperação de senha e Google via navegador foram implementados e exigem homologação real. A persistência real nos cofres macOS/Windows ainda exige homologação.
 
 O Nx coordena as tarefas com configurações explícitas por projeto. Os apps podem ser executados e publicados separadamente. `pnpm-lock.yaml` e `Cargo.lock` fixam as resoluções das dependências.
 
@@ -37,7 +37,7 @@ Só membros autenticados podem consultar `/v1/me/entitlements` e solicitar `/v1/
 - Cancelamento agendado mantém acesso até o fim do período. PastDue/Unpaid/Canceled não liberam PRO.
 - Ausência de assinatura e de licença válida retorna FREE. Erro no banco não libera PRO nem simula uma consulta bem-sucedida.
 
-Estas regras já estão implementadas e testadas na API; a extensão legada ainda não as aplica. Uma resposta de autorização não é um sistema de licença inviolável: o cliente local é modificável. O limite FREE exige integração com a extensão, e o desktop ainda precisa verificar o plano no motor nativo antes de iniciar novos jobs.
+Estas regras estão implementadas na API e integradas ao fluxo de downloads da extensão, ainda sem homologação real. Uma resposta de autorização não é um sistema de licença inviolável: o cliente local é modificável. O desktop ainda precisa verificar o plano no motor nativo antes de iniciar novos jobs.
 
 ## PostgreSQL
 
@@ -51,9 +51,9 @@ Migrations são aplicadas explicitamente, não a cada inicialização da API. O 
 
 1. Concluir configuração e validar login real no Supabase; cadastro, confirmação e recuperação de senha.
 2. Homologar os pagamentos hospedados de ponta a ponta e preparar a publicação da API e o webhook público. Stripe Sandbox já tem checkout mensal/anual/compra única, portal, verificação de assinatura, recibos idempotentes e reconciliação do estado. A tela de sucesso nunca concede PRO.
-3. Autenticação e limites na extensão; depois migração da interface para React/shadcn sem alterar a captura verificada.
+3. Homologar autenticação e limites na extensão; depois avaliar migração da interface para React/shadcn sem alterar a captura verificada.
 4. Pareamento Native Messaging com allowlist da extensão e mesma conta. Motor nativo de downloads, FFmpeg empacotado, cancelamento/retomada e SQLite.
-5. OAuth com PKCE pelo navegador do sistema e armazenamento nativo seguro da sessão.
+5. Homologar OAuth com PKCE pelo navegador do sistema e a sessão persistida nos sistemas suportados.
 6. CI em Linux/macOS/Windows, instaladores assinados, atualização e revisão da licença da distribuição FFmpeg.
 
 Ainda não há download nativo, pareamento ou mecanismo de atualização implementados nesta base. O Stripe funciona somente no ambiente de testes. A interface mostra esses estados honestamente e não contém aulas ou assinaturas de demonstração.

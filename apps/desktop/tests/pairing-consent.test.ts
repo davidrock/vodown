@@ -1,0 +1,20 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import type {SupabaseClient} from '@supabase/supabase-js';
+import {pairingConsent} from '../src/pairing-consent.ts';
+test('remembered approval survives a new controller, while identity is verified online every time',async()=>{
+  const values=new Map<string,string>();let calls=0,userId='account-a',fail=false;
+  const storage={getItem:async(key:string)=>values.get(key)||null,setItem:async(key:string,value:string)=>{values.set(key,value);},removeItem:async(key:string)=>{values.delete(key);}};
+  const client={auth:{getUser:async()=>{calls++;return {data:{user:{id:userId,email:'test@example.com'}},error:fail?new Error('network'):null};}}} as unknown as SupabaseClient;
+  const pending={nonce:'nonce',accessToken:'transient-token'};
+  let consent=pairingConsent(client,storage);
+  assert.equal((await consent.inspect(pending,'account-a')).trusted,false);
+  await consent.trust('account-a');
+  consent=pairingConsent(client,storage);
+  assert.equal((await consent.inspect(pending,'account-a')).trusted,true);
+  assert.equal(calls,2);
+  userId='account-b';await assert.rejects(()=>consent.inspect(pending,'account-a'),/mesma conta/);
+  userId='account-a';fail=true;await assert.rejects(()=>consent.inspect(pending,'account-a'),/validar/);
+  fail=false;await consent.revoke();assert.equal((await consent.inspect(pending,'account-a')).trusted,false);
+  assert(!JSON.stringify([...values]).includes('transient-token'));
+});

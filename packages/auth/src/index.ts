@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
-export function createVodownAuth(url: string | undefined, key: string | undefined, webSession=false) {
+type AuthStorage = {getItem: (key: string) => Promise<string | null>; setItem: (key: string, value: string) => Promise<void>; removeItem: (key: string) => Promise<void>};
+export function createVodownAuth(url: string | undefined, key: string | undefined, webSession=false, storage?: AuthStorage, detectSessionInUrl=webSession) {
   if (!url || !key) return null;
-  // Desktop/extension tokens remain in memory until a native secure-storage adapter is added.
-  return createClient(url, key, {auth: {persistSession: webSession, autoRefreshToken: true, detectSessionInUrl: webSession,flowType:webSession?'pkce':'implicit'}});
+  return createClient(url, key, {auth: {persistSession: webSession || !!storage, storage, autoRefreshToken: true, detectSessionInUrl,flowType:webSession||storage?'pkce':'implicit'}});
 }

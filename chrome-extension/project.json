@@ -1,1 +1,1 @@
-{"name":"extension","root":"chrome-extension","targets":{"test":{"command":"node --test tests/*.test.js","options":{"cwd":"chrome-extension"}},"build":{"command":"node tools/package-extension.mjs","outputs":["{workspaceRoot}/dist/vodown-chrome.zip"]}}}
+{"name":"extension","root":"chrome-extension","targets":{"test":{"command":"node tools/build-extension-auth.mjs --bundle-only && node --test chrome-extension/tests/*.test.js"},"build":{"command":"node tools/build-extension-auth.mjs && node tools/package-extension.mjs","outputs":["{workspaceRoot}/dist/vodown-chrome.zip"]}}}

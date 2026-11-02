@@ -1,0 +1,36 @@
+version: 2.1
+setup: true
+parameters:
+  full:
+    type: boolean
+    default: false
+orbs:
+  continuation: circleci/continuation@1.1.0
+jobs:
+  detect:
+    docker:
+      - image: node:24.22.1-bookworm
+    environment:
+      VODOWN_CI_FULL: << pipeline.parameters.full >>
+      NX_DAEMON: "false"
+      NX_ISOLATE_PLUGINS: "false"
+    steps:
+      - checkout
+      - run: npm install --global pnpm@11.17.0
+      - restore_cache:
+          keys:
+            - pnpm-v1-linux-amd64-node24-{{ checksum "pnpm-lock.yaml" }}
+      - run: pnpm install --frozen-lockfile --store-dir ~/.pnpm-store
+      - save_cache:
+          key: pnpm-v1-linux-amd64-node24-{{ checksum "pnpm-lock.yaml" }}
+          paths:
+            - ~/.pnpm-store
+      - run: node tools/ci/select.mjs
+      - store_artifacts:
+          path: /tmp/vodown-ci
+      - continuation/continue:
+          configuration_path: /tmp/vodown-ci/continuation.json
+workflows:
+  setup:
+    jobs:
+      - detect

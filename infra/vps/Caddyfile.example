@@ -1,0 +1,8 @@
+# Import these blocks into the EXISTING /opt/platform/caddy/Caddyfile once domains exist.
+# Replace hostnames and use vodown-production-* aliases for the production stack.
+staging.example.invalid {
+    reverse_proxy vodown-staging-web:3000
+}
+api.staging.example.invalid {
+    reverse_proxy vodown-staging-api:8080
+}

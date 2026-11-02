@@ -1,0 +1,44 @@
+# This stack joins the existing platform Caddy network. It creates no proxy or database.
+services:
+  web:
+    image: ${VODOWN_WEB_IMAGE:?Set an immutable web image}
+    env_file:
+      - ${VODOWN_WEB_ENV_FILE:-./web/.env}
+    restart: unless-stopped
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp
+    networks:
+      edge:
+        aliases:
+          - ${COMPOSE_PROJECT_NAME:?Set the stack name}-web
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    logging:
+      driver: json-file
+      options: {max-size: 10m, max-file: "3"}
+  api:
+    image: ${VODOWN_API_IMAGE:?Set an immutable API image}
+    env_file:
+      - ${VODOWN_API_ENV_FILE:-./api/.env}
+    restart: unless-stopped
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp
+    networks:
+      edge:
+        aliases:
+          - ${COMPOSE_PROJECT_NAME}-api
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    logging:
+      driver: json-file
+      options: {max-size: 10m, max-file: "3"}
+networks:
+  edge:
+    external: true
+    name: ${VODOWN_PROXY_NETWORK:-edge}

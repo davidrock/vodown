@@ -1,0 +1,17 @@
+.git
+.local
+.env
+**/.env
+**/.env.*
+**/node_modules
+**/dist
+**/.next
+**/bin
+**/obj
+**/target
+.nx
+.venv
+**/__pycache__
+downloads
+*.har
+**/*.user

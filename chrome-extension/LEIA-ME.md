@@ -1,8 +1,12 @@
-# Vodown — extensão autônoma
+# Vodown — extensão Chrome
 
 Baixa aulas da Hotmart, Whop e Kiwify em MP4, processando os vídeos inteiramente
 dentro do Chrome. Não precisa instalar Python, Node, FFmpeg ou um aplicativo
 auxiliar. O motor de vídeo em WebAssembly já está incluído nesta pasta.
+
+## Versão
+
+A versão aparece no rodapé do painel e em `chrome://extensions`. Em cada entrega de mudanças da extensão, incremente a versão do `manifest.json` antes de gerar o pacote; recarregar a extensão aplica o novo número e o código da pasta. A versão exibida indica o manifesto carregado pelo Chrome, não apenas o arquivo editado no projeto.
 
 ## Instalação
 
@@ -11,13 +15,19 @@ auxiliar. O motor de vídeo em WebAssembly já está incluído nesta pasta.
 3. Clique em **Carregar sem compactação** e selecione a pasta que contém
    `manifest.json`. Fixe **Vodown** no menu de extensões.
 
-Se estiver usando o projeto original, pode selecionar diretamente a pasta
-`chrome-extension`. Ela já contém os arquivos compilados necessários.
-Não é preciso executar comandos no terminal.
+No projeto fonte, execute `pnpm package:extension` antes de carregar a pasta
+`chrome-extension` ou instalar o ZIP. Uma versão sem as configurações públicas
+do Supabase e da API não consegue autenticar e bloqueia novos downloads.
+
+## Detecção automática e desktop
+
+Depois de entrar na conta e conectar ao desktop pela primeira vez, você pode fechar o painel lateral. A extensão detecta o curso ativo ao abrir a página, trocar de aba ou navegar dentro do curso, e envia a lista ao desktop. Uma verificação periódica recupera eventos após a suspensão do service worker. A detecção não inicia downloads e aguarda operações em andamento.
+
+O desktop guarda a autorização do pareamento no armazenamento seguro. Quando ele reinicia, a extensão reconecta usando uma sessão validada da mesma conta; o token de conexão é renovado. Na primeira confirmação após esta atualização, clique em Permitir conexão para gravar a autorização. Revogar no desktop ou sair da conta remove essa autorização. O Chrome precisa estar aberto e a sessão da plataforma do curso precisa estar válida. O login Vodown permanece após reiniciar o Chrome e a sessão é renovada automaticamente. Sair da conta, revogação no servidor ou remoção dos dados da extensão exigem novo login.
 
 ## Uso
 
-1. Entre normalmente na sua conta e abra o curso na Hotmart, Whop ou Kiwify.
+1. Entre na sua conta Vodown no painel, por e-mail ou Google, e abra um curso na Hotmart, Whop ou Kiwify com sua conta da plataforma.
 2. Clique no ícone da extensão para abrir o painel lateral.
 3. A extensão identifica a aba atual e carrega as aulas automaticamente ao
    abrir o painel ou trocar para outro curso. **Atualizar aulas desta aba**
@@ -105,7 +115,7 @@ não força uma nova busca nem muda sua seleção.
 
 ## Atualizar a extensão
 
-A versão atual é **1.5.0**. Se carregou diretamente a pasta `chrome-extension`
+A versão atual é **1.6.0**. Se carregou diretamente a pasta `chrome-extension`
 deste projeto, abra `chrome://extensions` e clique no botão **Recarregar**
 da extensão. Feche e abra novamente o painel lateral para atualizar a interface.
 
@@ -120,13 +130,18 @@ e buscar os vídeos entregues pelo player.
 
 ## Conta e privacidade
 
-A extensão funciona com a conta conectada no Chrome e depende do acesso
-que essa conta tem ao curso. Não existe e-mail, senha, cookie, token de
-login ou curso fixo no pacote. Outra pessoa pode usar a mesma extensão,
-entrando na própria conta e abrindo um curso disponível para ela.
+A extensão usa uma conta Vodown e depende também do acesso que a conta na
+plataforma tem ao curso. Não existe e-mail, senha, cookie, token ou curso
+fixo no pacote. A autenticação é feita no Supabase; a API Vodown recebe o
+token e a quantidade de aulas para autorizar a ação. O plano FREE permite
+uma aula por ação e o PRO permite lotes. Cada nova aula é autorizada antes
+de começar; sem acesso à API não são iniciadas novas aulas.
 
-Não há servidor nosso, serviço pago, telemetria ou envio de dados a terceiros.
-As requisições de reprodução vão aos servidores da própria plataforma.
+A sessão e os tokens de renovação ficam em `chrome.storage.local`, em uma área
+restrita a contextos confiáveis da extensão. Nenhuma senha é armazenada.
+Ao sair, as cópias persistente e temporária da sessão são removidas. A API não recebe URLs de
+reprodução nem arquivos de vídeo. As requisições de reprodução vão aos
+servidores da própria plataforma.
 URLs assinadas de vídeo e chaves HLS ficam em memória durante a operação;
 não são salvas no histórico da extensão. A lista de aulas fica na sessão
 do Chrome; os identificadores de arquivos concluídos ficam no armazenamento
@@ -237,3 +252,9 @@ conferiram também a geração, áudio, duração, resolução e o salvamento do
 Bibliotecas e fontes: `vendor/NOTICE.txt`, `vendor/SOURCES.md` e os textos
 de licença em `vendor`. São empacotadas localmente, sem buscar código remoto
 durante o uso.
+
+## Materiais no desktop
+
+O botão Materiais abre a aula no Chrome e usa os controles de arquivo da plataforma. Inclui cartões com nome de arquivo da Whop e controles role=button de anexos na Kiwify. Arquivos abertos pela plataforma em uma nova aba são enviados ao gerenciador de downloads e somente essa nova aba é fechada. A gravação usa a pasta de downloads configurada no Chrome, com subpastas Vodown/Curso/Módulo/Materiais/Aula.
+
+A navegação de cursos premium em dashboard.kiwify.com é reconhecida, preservando os módulos e aulas visíveis. Este suporte foi adicionado para os materiais; players de vídeo Vimeo encontrados nesse formato ainda não foram homologados no motor nativo.

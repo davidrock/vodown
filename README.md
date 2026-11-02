@@ -2,11 +2,11 @@
 
 O Vodown é um app para organizar e guardar localmente as aulas que o usuário tem autorização para baixar. A proposta é combinar uma extensão do Chrome, que encontra aulas na plataforma aberta pelo usuário, com um app desktop para organizar downloads e arquivos.
 
-> O projeto está em desenvolvimento. A extensão autônoma existente continua utilizável, e a base de autenticação e cobrança está preparada em ambiente de testes. O motor nativo do desktop e a integração de planos na extensão ainda não foram concluídos.
+> O projeto está em desenvolvimento. A extensão oferece login por e-mail ou Google e consulta o plano antes de iniciar downloads; a integração ainda precisa de configuração e homologação real. O motor nativo do desktop e a cobrança de produção ainda não foram concluídos.
 
 ## O que existe hoje
 
-- **Extensão Chrome:** extensão Manifest V3 com captura e downloads por navegador para Whop, Hotmart e Kiwify, nos formatos de vídeo observados e implementados. Inclui legendas opcionais e opções de qualidade e destino. A versão independente não exige Python nem FFmpeg instalados no computador. Ela ainda não faz login no Vodown nem aplica os limites dos planos.
+- **Extensão Chrome:** extensão Manifest V3 com captura e downloads por navegador para Whop, Hotmart e Kiwify nos formatos implementados. Inclui legendas, qualidade e destino. Login Supabase por e-mail/Google e autorização da API foram implementados; a homologação real ainda está pendente. Uma versão sem configuração de conta bloqueia downloads.
 - **Desktop:** app Tauri 2 com interface React, Vite e TypeScript. Já tem identidade visual, tela de conta, preferências e histórico local SQLite. A interface está em desenvolvimento; o motor nativo de downloads e a comunicação entre o app e a extensão ainda estão pendentes.
 - **Site e conta:** app Next.js com landing page, cadastro e login Supabase por e-mail, além de uma área de cobrança. O fluxo de checkout usa a página hospedada do Stripe.
 - **API:** ASP.NET Core 10 com autenticação por JWT do Supabase, consulta de permissões, cobrança Stripe e acesso ao PostgreSQL.
@@ -92,7 +92,7 @@ As verificações de PostgreSQL e Stripe Sandbox exigem configuração local pr�
 
 ## Extensão independente e ferramentas anteriores
 
-A extensão pode ser carregada no Chrome pelo diretório `chrome-extension/` em modo de desenvolvedor. Consulte [guia da extensão](chrome-extension/LEIA-ME.md) para instalação e opções. O comportamento específico da captura ainda está isolado da integração de conta do produto.
+A extensão pode ser carregada no Chrome pelo diretório `chrome-extension/` em modo de desenvolvedor, após preparar o pacote com a configuração pública da conta. Consulte [guia da extensão](chrome-extension/LEIA-ME.md) para instalação, configuração e opções.
 
 O repositório também mantém scripts locais anteriores para Whop e Hotmart. Eles são ferramentas separadas do app desktop e não representam suporte universal a cursos ou plataformas. Consulte [Whop](EXTENSAO.md) e [Hotmart](HOTMART.md) antes de usá-los.
 

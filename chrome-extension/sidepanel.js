@@ -2,8 +2,10 @@ import {courseScope,safeError,stateForCourse} from './lib/model.js';
 import {DEFAULT_DOWNLOAD_FOLDER,DEFAULT_MAX_INPUT_MIB,DEFAULT_VIDEO_QUALITY,MAX_MAX_INPUT_MIB,MIN_MAX_INPUT_MIB,normalizeSettings} from './lib/settings.js';
 
 const el=id=>document.getElementById(id);
+el('extension-version').textContent=`Vodown · versão ${chrome.runtime.getManifest().version}`;
 let selected=new Set(), inventoryKey=null, rawState=null, currentState=null;
 let context={tabId:null,scope:null,checking:true};
+let desktopPaired=false;
 let requesting=false, revision=0, lastAttempt=null, syncTimer=null, settingsDirty=false;
 
 async function send(action,data={}) {
@@ -17,17 +19,13 @@ function acceptState(state) {
   rawState=state;render();maybeSync();
 }
 
-function showSettings(open) {
-  el('main-screen').hidden=open;
-  el('settings-screen').hidden=!open;
-  el('open-settings').hidden=open;
-  if(open) {
-    el('settings-feedback').textContent='';
-    el('settings-feedback').classList.remove('error');
-    writeSettings(currentState?.settings||rawState?.settings);
-    settingsDirty=false;
-  }
+function showScreen(name) {
+  for(const screen of ['main','account','settings'])el(`${screen}-screen`).hidden=screen!==name;
+  document.querySelectorAll('[data-screen]').forEach(button=>{if(button.dataset.screen===name)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');});
+  if(name==='settings'){el('settings-feedback').textContent='';el('settings-feedback').classList.remove('error');writeSettings(currentState?.settings||rawState?.settings);settingsDirty=false;}
 }
+function showSettings(open){showScreen(open?'settings':'main');}
+document.querySelectorAll('[data-screen]').forEach(button=>button.addEventListener('click',()=>{void action(async()=>{if(settingsDirty)await savePreferences();showScreen(button.dataset.screen);},showSettingsError);}));
 
 function writeSettings(settings={}) {
   if(document.activeElement!==el('quality'))el('quality').value=settings.videoQuality||DEFAULT_VIDEO_QUALITY;
@@ -40,9 +38,11 @@ function writeSettings(settings={}) {
 }
 
 function disable() {
-  const busy=requesting||rawState?.busy;
+  const busy=requesting||rawState?.busy||rawState?.accountBusy;
   el('scan').disabled=!!busy||context.checking||!context.scope;
-  for(const id of ['validate','download','subtitles'])el(id).disabled=!!busy||!currentState?.inventory||!selected.size;
+  for(const id of ['validate','download','subtitles'])el(id).disabled=!!busy||!rawState?.account?.email||!currentState?.inventory||!selected.size;
+  for(const id of ['account-email','account-password','account-sign-in','account-google','account-sign-out','account-refresh'])el(id).disabled=!!busy;
+  if(rawState?.account?.configured===false)for(const id of ['account-email','account-password','account-sign-in','account-google'])el(id).disabled=true;
   el('subtitles').hidden=currentState?.inventory?.platform!=='whop';
   el('include-subtitles-row').hidden=currentState?.inventory?.platform!=='whop';
   el('include-subtitles').disabled=!!busy;
@@ -50,7 +50,7 @@ function disable() {
   el('open-settings').disabled=!!busy;
   el('select-all').disabled=!!busy;
   el('lessons').querySelectorAll('input').forEach(input=>input.disabled=!!busy);
-  el('stop').hidden=!rawState?.busy||rawState.operation?.kind==='scan';
+  el('stop').hidden=!rawState?.busy;
 }
 
 function selection() {
@@ -64,11 +64,19 @@ function selection() {
 
 function render() {
   if(!rawState)return;
+  const account=rawState.account;
+  el('account-logged-in').hidden=!account?.email;
+  el('account-logged-out').hidden=!!account?.email;
+  el('account-message').textContent=account?.configured===false?'Conta indisponível: configure a extensão para o ambiente Vodown.':'Use a mesma conta do desktop.';
+  el('account-summary').textContent=account?.email ? `${account.email} · ${account.plan ? `Plano ${account.plan.toUpperCase()}` : 'Plano indisponível'}` : '';
   const state=stateForCourse(rawState,context.checking?null:context.scope);
   currentState=state;
   el('error').hidden=!state.error;
   el('error').textContent=state.error||'';
-  el('tab-context').textContent=context.checking?'Conferindo a aba atual…':context.scope?`Curso detectado na ${context.scope.platform==='hotmart'?'Hotmart':context.scope.platform==='kiwify'?'Kiwify':'Whop'}. A lista acompanha esta aba.`:'Abra um curso da Hotmart, Whop ou Kiwify na aba atual.';
+  el('tab-context').textContent=context.checking?'Conferindo a aba atual…':state.inventory?'As aulas deste curso estão disponíveis abaixo.':'Abra um curso na Hotmart, Whop ou Kiwify para encontrar as aulas.';
+  el('desktop-handoff').hidden=!desktopPaired;
+  el('operation-status').hidden=!(state.busy||state.results?.length||state.error);
+  el('progress').hidden=!state.busy||!state.total;
   el('stage').textContent=context.checking?'Conferindo a aba atual…':state.stage;
   el('current').hidden=!state.current;
   el('current').textContent=state.current||'';
@@ -79,6 +87,7 @@ function render() {
   if(key!==inventoryKey) {
     inventoryKey=key;
     el('include-subtitles').checked=false;
+    el('lesson-picker').open=!desktopPaired;
     selected=new Set(inventory?.lessons.slice(0,1).map(x=>x.id)||[]);
     el('lessons').replaceChildren();
     if(inventory) {
@@ -112,6 +121,7 @@ function render() {
 }
 
 function showError(error) {el('error').hidden=false;el('error').textContent=safeError(error);}
+function showAccountError(error){el('account-error').hidden=false;el('account-error').textContent=safeError(error);}
 function showSettingsError(error) {
   el('settings-feedback').textContent=safeError(error);
   el('settings-feedback').classList.add('error');
@@ -158,6 +168,15 @@ el('scan').addEventListener('click',()=>action(async()=>{
   if(!context.scope)throw new Error('Selecione a aba do curso.');
   acceptState(await send('scan',{tabId:context.tabId}));
 }));
+el('account-form').addEventListener('submit',event=>{
+  event.preventDefault();
+  const email=el('account-email').value,password=el('account-password').value;
+  el('account-password').value='';el('account-error').hidden=true;
+  void action(()=>send('signIn',{email,password}),showAccountError);
+});
+el('account-google').addEventListener('click',()=>{el('account-error').hidden=true;void action(()=>send('signInGoogle'),showAccountError);});
+el('account-sign-out').addEventListener('click',()=>{el('account-error').hidden=true;void action(()=>send('signOut'),showAccountError);});
+el('account-refresh').addEventListener('click',()=>{el('account-error').hidden=true;void action(()=>send('refreshAccount'),showAccountError);});
 el('open-settings').addEventListener('click',()=>showSettings(true));
 el('close-settings').addEventListener('click',()=>action(async()=>{
   if(settingsDirty)await savePreferences();
@@ -206,3 +225,29 @@ chrome.tabs.onUpdated.addListener((tabId,change)=>{
 chrome.tabs.onRemoved.addListener(tabId=>{if(tabId===context.tabId)scheduleContext(true);});
 window.addEventListener('focus',()=>scheduleContext());
 action(async()=>{acceptState(await send('state'));await refreshContext();});
+
+async function checkDesktopConnection(quiet=false) {
+  el('desktop-check').disabled=true;
+  if(!quiet)el('desktop-status').textContent='Procurando o aplicativo…';
+  try {
+    const result=await send('desktopStatus');const previouslyPaired=desktopPaired;desktopPaired=result.paired;
+    if(desktopPaired&&!previouslyPaired)el('lesson-picker').open=false;
+    document.querySelector('.connection-light').classList.toggle('connected',desktopPaired);
+    el('desktop-handoff').hidden=!desktopPaired;
+    el('desktop-status').textContent=result.paired?'Desktop conectado':result.connected?'Desktop disponível':'Abra o Vodown para conectar';
+    el('desktop-pair').hidden=result.paired;
+    el('desktop-check').hidden=result.paired;
+    el('desktop-pair').textContent='Conectar ao desktop';
+  } catch {el('desktop-pair').hidden=false;el('desktop-check').hidden=false;el('desktop-status').textContent='Não foi possível conectar. Confira se o host está instalado para esta extensão e abra o Vodown.';}
+  finally {el('desktop-check').disabled=false;}
+}
+el('desktop-check').addEventListener('click',()=>{void checkDesktopConnection();});
+void checkDesktopConnection();
+setInterval(()=>{if(!document.hidden && !el('desktop-pair').disabled)void checkDesktopConnection(true);},10000);
+
+el('desktop-pair').addEventListener('click',async()=>{
+  el('desktop-pair').disabled=true;el('desktop-status').textContent='Confirme a conexão na janela do desktop.';
+  try{await send('pairDesktop');await checkDesktopConnection();}
+  catch(error){el('desktop-status').textContent=error.message||'Não foi possível conectar.';}
+  finally{el('desktop-pair').disabled=false;}
+});

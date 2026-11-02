@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
@@ -12,6 +13,13 @@ using Vodown.Service.Billing;
 using Vodown.Repository.Billing;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.ForwardLimit = 1;
+    foreach (var network in builder.Configuration.GetSection("ReverseProxy:KnownNetworks").Get<string[]>() ?? [])
+        options.KnownIPNetworks.Add(System.Net.IPNetwork.Parse(network));
+});
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<ApiExceptionHandler>();
 builder.Services.AddControllers().AddJsonOptions(options =>
@@ -68,14 +76,42 @@ var origins = builder.Configuration.GetSection("Cors:Origins").Get<string[]>() ?
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.WithOrigins(origins).AllowAnyHeader().AllowAnyMethod()));
 
 var app = builder.Build();
+app.UseForwardedHeaders();
 app.UseExceptionHandler();
-if (!app.Environment.IsDevelopment()) { app.UseHsts(); app.UseHttpsRedirection(); }
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts();
+    // Container probes use HTTP internally; business endpoints remain HTTPS-only.
+    app.UseWhen(context => !context.Request.Path.StartsWithSegments("/health"), branch => branch.UseHttpsRedirection());
+}
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapGet("/health/live", () => Results.Ok(new { status = "ok", service = "vodown-api" })).AllowAnonymous();
 app.MapHealthChecks("/health/ready").AllowAnonymous();
 app.MapControllers();
+if (app.Environment.IsDevelopment() && app.Configuration.GetValue<bool>("Development:AllowLocalProActivation"))
+{
+    var localConnection = new Npgsql.NpgsqlConnectionStringBuilder(app.Configuration.GetConnectionString("Vodown"));
+    if (localConnection.Host is not ("localhost" or "127.0.0.1") || localConnection.Database != "vodown")
+        throw new InvalidOperationException("Licença de desenvolvimento exige o banco Vodown local.");
+    app.MapPost("/v1/development/local-pro", async (HttpContext context, VodownDbContext db, CancellationToken cancellationToken) =>
+    {
+        if (context.Connection.RemoteIpAddress is not { } address || !System.Net.IPAddress.IsLoopback(address))
+            return Results.NotFound();
+        var id = Guid.Parse(context.User.FindFirst("sub")!.Value);
+        var key = $"development-local-{id}";
+        var license = await db.LifetimeLicenses.FindAsync([key], cancellationToken);
+        if (license is null)
+        {
+            license = new LifetimeLicense(new Vodown.Shared.Domain.UserId(id), key, key);
+            db.LifetimeLicenses.Add(license);
+        }
+        license.Synchronize(true, DateTimeOffset.UtcNow);
+        await db.SaveChangesAsync(cancellationToken);
+        return Results.Ok(new { scope = "local-development", plan = "pro" });
+    }).RequireAuthorization("Member");
+}
 if (app.Environment.IsDevelopment()) app.MapOpenApi();
 app.Run();
 public partial class Program;
